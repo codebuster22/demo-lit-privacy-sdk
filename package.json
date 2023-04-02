@@ -2,7 +2,7 @@
   "name": "demo-lit-privacy-app",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://curve-labs.github.io/demo-lit-privacy-sdk",
+  "homepage": "http://codebuster22.github.io/demo-lit-privacy-sdk",
   "dependencies": {
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",
