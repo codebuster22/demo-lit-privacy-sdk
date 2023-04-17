@@ -3,6 +3,7 @@ import "./App.css";
 import * as ethers from "ethers";
 import { useState } from "react";
 import LitPrivacy from "lit-privacy-sdk";
+import * as LitJsSdk from "@lit-protocol/lit-node-client";
 
 const gelatoRelayKey = process.env.REACT_APP_GELATO_RELAY_KEY;
 const chain = "ethereum";
@@ -10,7 +11,7 @@ const publicSignal = "ENS_PROPOSAL_1";
 const tokenAddress = "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85";
 const tokenType = "ERC721";
 const implemenationChain = "mumbai";
-const implementationContract = "0x0588d013012B1E47883e9C720d809e1BdD84f675";
+const implementationContract = "0xFCAEaBD08D9D5465066ce4e4e3Ec561B1c0e5CF9";
 const blockNumber = 33884421;
 
 function App() {
@@ -29,6 +30,16 @@ function App() {
       const signerAddress = await signer.getAddress();
       console.log(LitPrivacy);
 
+      const client = new LitJsSdk.LitNodeClient({
+        litNetwork: "serrano",
+      });
+      await client.connect();
+
+      const authSig = await LitJsSdk.checkAndSignAuthMessage({
+        chain
+      });
+      console.log(authSig);
+
       // instantiate SDK
       const litPrivacyClient = new LitPrivacy(
         provider,
@@ -36,17 +47,11 @@ function App() {
         publicSignal,
         tokenAddress,
         blockNumber,
-        tokenType
+        tokenType,
+        authSig,
+        client
       );
-      try {
-        await litPrivacyClient.generateProofOfMembership();
-      } catch (e) {
-        console.log(e);
-        console.log("Test 1: Cannot be ran before initialising");
-      }
 
-      // initialise sdk
-      await litPrivacyClient.initialize();
       console.log(litPrivacyClient);
 
       // generate payload
@@ -56,7 +61,6 @@ function App() {
       // send proof and vote
       const taskId = await litPrivacyClient.generateProofAndRelayUsingGelato(
         gelatoRelayKey,
-        provider,
         implemenationChain,
         implementationContract,
         payload
